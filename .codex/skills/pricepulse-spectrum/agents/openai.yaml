@@ -1,7 +1,0 @@
-interface:
-  display_name: "PricePulse Spectrum"
-  short_description: "Build the evidence-first PricePulse MY MVP"
-  brand_color: "#155EEF"
-  default_prompt: "Use $pricepulse-spectrum to build the next verified PricePulse MY stage."
-policy:
-  allow_implicit_invocation: true
