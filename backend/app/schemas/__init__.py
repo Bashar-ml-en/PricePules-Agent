@@ -1,1 +1,1 @@
-"""Typed API response contracts."""
+"""Future typed API contracts for RetailOps ML."""
