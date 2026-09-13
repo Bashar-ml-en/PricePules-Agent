@@ -1,69 +1,54 @@
-# PricePulse MY Data Contract
+# RetailOps ML Retail Connector Contract
 
-**Verification date:** 12 September 2026 (Malaysia Time)  
-**Status:** verified for schema, public availability, and official provenance; full historical quality profiling remains an ingestion-stage task.
+## Purpose
 
-## Approved sources
+This contract turns authorised retailer exports or APIs into a versioned,
+comparable input for demand forecasting and inventory-risk review. Missing
+evidence produces a limited use case or INCONCLUSIVE, never invented values.
 
-| Asset | Official URL | Verified facts |
+## Canonical entities
+
+| Entity | Required fields | Role |
 | --- | --- | --- |
-| Price transactions | `https://storage.data.gov.my/pricecatcher/pricecatcher_YYYY-MM.csv` | Monthly CSV endpoint. `pricecatcher_2026-09.csv` returned HTTP 200, had a 15,002,536-byte response, and was last modified 11 September 2026 12:00:28 GMT. |
-| Item lookup | `https://storage.data.gov.my/pricecatcher/lookup_item.csv` | Returned HTTP 200, 56,042 bytes, last modified 9 September 2026 09:54:25 GMT. |
-| Premise lookup | `https://storage.data.gov.my/pricecatcher/lookup_premise.csv` | Returned HTTP 200, 492,832 bytes, last modified 7 September 2026 12:00:31 GMT. |
+| Product | product_id, sku, name, quantity_unit | Product identity and compatible unit. |
+| Location | location_id, name, type | Store or warehouse identity. |
+| Order line | order_id, sku, location_id, occurred_at, quantity, status | Historical demand, returns, and cancellations. |
+| Inventory snapshot | snapshot_at, sku, location_id, on_hand | Available stock evidence. |
+| Inbound supply | supply_id, sku, location_id, expected_at, quantity, status | Expected replenishment. |
+| Supplier terms | supplier_id, sku, lead_time_days | Replenishment-risk eligibility. |
 
-The public [PriceCatcher catalogue](https://data.gov.my/data-catalogue/pricecatcher) identifies the sources as the Ministry of Domestic Trade and Department of Statistics Malaysia. It says prices are collected and verified daily by ground staff, and warns that PriceCatcher is suited to high-frequency, item-and-location price surveillance rather than inflation measurement.
+Optional fields include net sales, committed quantity, safety-stock policy,
+promotion, product category, and cost. They can enrich ranking but cannot
+replace a required identity, quantity, or timestamp.
 
-## Live schema verification
+## Connector validation
 
-The following headers were read directly from the live CSV responses on 12 September 2026.
+The Data Contract Agent records connector type, account scope, retrieval time,
+snapshot ID, schema version, mapping version, source row counts, duplicate
+policy, exclusions, and field-level quality results.
 
-### Transactions
-
-```text
-date,premise_code,item_code,price
-```
-
-| Field | Contract |
+| Check | Stop or limitation |
 | --- | --- |
-| `date` | Date in `YYYY-MM-DD` format. |
-| `premise_code` | Identifier joined to the premise lookup. |
-| `item_code` | Identifier joined to the item lookup. |
-| `price` | Numeric observed price in RM. |
+| Authorisation and tenant scope | REJECT if absent or cross-tenant. |
+| SKU/location/unit mapping | REJECT for unknown or incompatible identities. |
+| Orders | Exclude and record cancelled/duplicate lines; INCONCLUSIVE when usable history is inadequate. |
+| Inventory | INCONCLUSIVE when current stock is stale or unavailable. |
+| Supply and lead time | No replenishment recommendation without declared evidence. |
+| Timestamp and quantity parsing | Reject invalid records rather than coercing values. |
+| Snapshot immutability | REJECT if model input cannot be reproduced. |
 
-The first raw row observed in the September 2026 file was dated 2026-09-01; the last raw row read was dated 2026-09-11. Ingestion must independently calculate the actual range, continuity, duplicates, missingness, and valid-price counts. Do not infer these from file order.
+## Connector-agent output
 
-### Item lookup
-
-```text
-item_code,item,unit,item_group,item_category
-```
-
-`item_code` defines the only permitted item-level analysis grain. `unit` must be present and displayed with all price results. The sample contains a sentinel `-1` row with blank item data; it must be reported as an invalid/missing lookup record rather than repaired silently.
-
-### Premise lookup
-
-```text
-premise_code,premise,address,premise_type,state,district
-```
-
-`state` and `district` are the approved local geography filters. The sample contains a `-1.0` blank sentinel premise row; it must be reported, not silently mapped to a location.
-
-## Relationship and aggregation contract
-
-1. Join transactions to both lookups by their code fields and record unmatched rows.
-2. Filter for exactly one official `item_code` and one selected geography before aggregation.
-3. Verify the item's published unit; never combine codes or units.
-4. Aggregate qualified transaction prices to a daily median in RM per verified unit.
-5. Retain daily transaction count and distinct-premise count with each median.
-6. Mark a day coverage-ineligible when it does not meet configured thresholds. It cannot receive a forecast, anomaly classification, or recommendation.
-
-## Historical availability
-
-The representative endpoints `pricecatcher_2026-08.csv`, `pricecatcher_2025-09.csv`, and `pricecatcher_2024-09.csv` each returned HTTP 200 on 12 September 2026. The loader may use a configurable sequence of monthly URLs, but must record unavailable files and never assume the pattern guarantees every month exists.
-
-## Explicit limitations
-
-- The data does not establish a representative inflation rate; official CPI is required for that purpose.
-- The data contains prices, not evidence of their cause, a seller's intent, policy impact, stock availability, or misconduct.
-- A detected residual anomaly means only that an observed qualified daily median differs from a historical expectation.
-- No claim is permitted until data validation and chronological model evaluation are complete.
+~~~json
+{
+  "snapshot_id": "uuid",
+  "connector_type": "csv | shopify | square | other",
+  "mapping_version": "v1",
+  "status": "PASS | PASS_WITH_LIMITATIONS | REJECT | INCONCLUSIVE",
+  "approved_uses": ["demand_forecast"],
+  "blocked_uses": ["replenishment_draft"],
+  "entity_counts": {"order_lines": 0, "inventory_snapshots": 0},
+  "limitations": [],
+  "evidence_refs": []
+}
+~~~
