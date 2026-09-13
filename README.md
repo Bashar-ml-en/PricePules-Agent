@@ -31,6 +31,7 @@ stages, not mocked features.
 - [Agent contracts](docs/agent_prompts.md)
 - [ML lifecycle governance](docs/lifecycle_governance.md)
 - [Architecture](docs/architecture.md)
+- [Inspectable system blueprint](docs/system_blueprint.md)
 - [Build track](docs/build_track.md)
 - [Product-decision prompt](docs/prompting_standard.md)
 
@@ -54,3 +55,19 @@ pnpm dev
 ~~~
 
 Open http://localhost:5173 after starting the API at http://localhost:8000.
+
+## Vercel deployment
+
+The checked-in Vercel configuration builds the static React control room from
+`frontend/` and serves `frontend/dist`. It explicitly installs development
+build tooling, so a `NODE_ENV=production` project variable cannot omit Vite or
+TypeScript during Vercel's build. The public control room uses its embedded,
+explicitly labelled architecture blueprint unless an HTTPS API is configured
+with `VITE_API_URL`.
+
+A Vercel deployment makes the inspectable product surface available; it does
+not by itself activate retail connectors, model training, agent workloads, or
+operational decisions. Before connecting a production API, deploy it separately
+with authenticated connector credentials held only on the server, explicit
+CORS for the Vercel domain, durable audit storage, and the lifecycle gates in
+`docs/system_blueprint.md`.
