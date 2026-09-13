@@ -1,0 +1,6 @@
+interface:
+  display_name: "RetailOps ML Lifecycle"
+  short_description: "Build trustworthy retail ML workflows"
+  default_prompt: "Use $retailops-ml-lifecycle to design a reliable retail connector or ML lifecycle capability."
+policy:
+  allow_implicit_invocation: true
