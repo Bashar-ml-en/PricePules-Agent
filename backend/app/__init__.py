@@ -1,1 +1,1 @@
-"""PricePulse MY backend package."""
+"""RetailOps ML backend package."""

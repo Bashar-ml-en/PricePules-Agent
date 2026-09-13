@@ -1,4 +1,4 @@
-"""Application configuration with deliberately small, local defaults."""
+"""RetailOps ML runtime configuration."""
 
 from dataclasses import dataclass
 import os
@@ -6,9 +6,7 @@ import os
 
 @dataclass(frozen=True)
 class Settings:
-    """Runtime settings that never contain client-visible secrets."""
-
-    app_name: str = "PricePulse MY"
+    app_name: str = "RetailOps ML"
     app_version: str = "0.1.0"
     cors_origins: tuple[str, ...] = (
         "http://localhost:5173",
@@ -17,10 +15,9 @@ class Settings:
 
     @classmethod
     def from_environment(cls) -> "Settings":
-        raw_origins = os.getenv("PRICEPULSE_CORS_ORIGINS")
+        raw_origins = os.getenv("RETAILOPS_CORS_ORIGINS")
         if not raw_origins:
             return cls()
-
         origins = tuple(
             origin.strip() for origin in raw_origins.split(",") if origin.strip()
         )
