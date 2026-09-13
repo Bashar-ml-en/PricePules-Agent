@@ -9,6 +9,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
+from app.system_blueprint import build_system_blueprint
 
 
 app = FastAPI(
@@ -56,3 +57,10 @@ def product_brief() -> dict[str, object]:
             "unmeasured business guarantees",
         ],
     }
+
+
+@app.get("/system/blueprint", tags=["system"])
+def system_blueprint() -> dict[str, object]:
+    """Expose the inspectable architecture without claiming a live workload."""
+
+    return build_system_blueprint()
