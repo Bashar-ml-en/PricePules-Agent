@@ -1,0 +1,19 @@
+# Runtime source-data cache
+data/raw/*.csv
+data/cache/
+!data/raw/.gitkeep
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+backend/.packages/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# Local settings and database
+.env
+*.db
