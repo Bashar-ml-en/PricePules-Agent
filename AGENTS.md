@@ -1,45 +1,63 @@
-# PricePulse MY — Project Constitution
+# RetailOps ML — Project Constitution
 
 ## Mission
 
-Build a reproducible, evidence-first Malaysian essential-goods price-surveillance prototype. The product surfaces statistically unusual qualified price signals for human review.
+Build an evidence-first decision-support system for retailers and distributors.
+It identifies demand, inventory, and replenishment cases that merit human
+review. The product scope is a merchant's authorised operational data, not a
+country-specific public dataset.
 
-The mandatory governing documents are [the constitution](docs/constitution.md), [the data contract](docs/data_contract.md), and [the prompting standard](docs/prompting_standard.md). Read the relevant document before changing a workflow, agent, model, claim, or API contract.
+The governing documents are the constitution, retail connector contract, agent
+contracts, lifecycle governance, and product-decision prompt in docs/. Read the
+relevant document before changing a workflow, model, agent, claim, or API
+contract.
 
-## Source of truth
+## Product boundary
 
-Use only the official PriceCatcher transaction data and its official item and premise lookup tables. Inspect live source files before assuming a filename, schema, date range, field, unit, or data value.
+- The product supports human planners; it does not autonomously buy stock,
+  transfer inventory, alter prices, or contact suppliers.
+- A forecast, risk score, or draft action is an estimate, not a guarantee of
+  sales, profit, availability, or business impact.
+- Demo, synthetic, and public benchmark data must be visibly labelled. A
+  production claim needs authorised customer data and a declared evaluation.
+- If identity, unit, stock coverage, lead time, or forecasting evidence is
+  insufficient, return INCONCLUSIVE and do not create an action draft.
 
-## Evidence boundary
+## Data and modelling rules
 
-- Process one official `item_code` and verified unit at a time.
-- Never combine items or compare incompatible units.
-- PriceCatcher supports local, high-frequency price surveillance. It does not establish inflation, a cause, a supply shortage, recommended prices, or misconduct.
-- An anomaly may support only: “conduct a human price-surveillance review.”
-- If coverage or evidence is insufficient, return `INCONCLUSIVE`.
-- Do not invent values, dates, locations, sources, metrics, causes, or conclusions.
-
-## Modelling rules
-
-- Never randomize a temporal split or use future observations in a feature, baseline, training set, validation set, or prediction.
-- Establish a simple historical baseline before an ML model.
-- Calculate MAE and RMSE deterministically using chronological validation.
-- Do not tune against the final chronological test set.
-- Retain the baseline if an eligible ML model does not outperform it on validation.
-- Use a documented residual anomaly method and never score a coverage-ineligible date as an anomaly.
+- Accept only authorised connector data or explicitly labelled fixtures.
+- Analyse only compatible SKU, location, and quantity-unit scopes. Record
+  exclusions; never silently repair source records.
+- Version every input snapshot, mapping, feature definition, model
+  configuration, metric, and decision artifact.
+- Use chronological splits and historical-only features. Establish a baseline
+  before an ML candidate and lock the final test period.
+- Promote a model only when it improves declared validation criteria; retain a
+  rollback-ready champion and monitor realised error and drift.
 
 ## Agent rules
 
-Agents are deterministic typed Python components, not LLM calls. They inspect structured tool results and return concise decisions, evidence references, and limitations. They must not calculate metrics mentally or create unverified prose.
+Agents are typed, deterministic components by default. They receive named
+artifacts and return concise decisions, evidence references, limitations, and
+the next action. They do not retrieve unapproved data, calculate metrics
+mentally, or write to a customer system.
 
-The Reliability Critic can return only `PASS`, `PASS_WITH_LIMITATIONS`, `REJECT`, or `INCONCLUSIVE`. It must reject unsupported claims, weak coverage, incompatible units, unverified provenance, leakage, and missing baselines.
+The fixed specialists are Data Contract, Forecast Evaluation, Inventory Risk,
+Impact Ranking, Policy Critic, and Action Drafting. The Policy Critic may
+return only PASS, PASS_WITH_LIMITATIONS, REJECT, or INCONCLUSIVE and has veto
+authority over unsupported actions.
 
-The workflow stays flat: one orchestrator and four specialists. Specialists return compact typed evidence artifacts, do not create subagents, and never communicate directly with the user. The reporter renders only critic-approved findings.
+An optional LLM may explain critic-approved evidence. It may not create
+numbers, map data without approval, choose a model, or submit an action.
 
-## Engineering
+## Engineering and assurance
 
-- Python, FastAPI, pandas, scikit-learn, React, Vite, TypeScript, and Recharts.
-- Keep secrets out of the client; no paid AI API is required.
-- Prefer focused, testable modules and structured API responses.
-- Before completion, run relevant tests, frontend production build, and the reliability audit.
-- Every source mapping, model/threshold, agent contract, or permitted claim change needs a documented rationale and regression coverage.
+- Use Python, FastAPI, pandas, scikit-learn, React, Vite, and TypeScript.
+- Keep credentials and operational data server-side; use read-only,
+  least-privilege connectors by default.
+- Record concise audit artifacts, never hidden reasoning or unnecessary
+  customer data.
+- A connector, model, threshold, agent contract, or action-policy change needs
+  fixture-based success, failure, and safety-boundary tests.
+- Before release, run relevant tests, frontend build, lifecycle audit, and the
+  four product questions: why, what, how, and measured impact.

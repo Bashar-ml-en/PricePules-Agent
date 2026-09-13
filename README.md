@@ -1,56 +1,56 @@
-# PricePulse MY
+# RetailOps ML
 
-PricePulse MY is an evidence-first prototype for identifying statistically unusual local price movements in essential goods in Malaysia. It supports human price-surveillance review; it is not a pricing, enforcement, or inflation system.
+RetailOps ML is a global, evidence-first decision-support foundation for
+retailers and distributors. It helps human planners identify demand and
+inventory cases that deserve review before a stockout or excess-stock decision
+is made.
 
-## What it does
+## The product answers four questions
 
-- Use official PriceCatcher transaction data and official item/premise lookup tables.
-- Analyse one official item code and its verified unit in a selected location.
-- Calculate daily price evidence, a leakage-safe forecast, and qualified anomalies.
-- Use deterministic specialist agents to validate data, scope the signal, and reject unsupported conclusions.
-- Present source provenance, coverage, model evidence, anomalies, and limitations in one dashboard.
+| Question | RetailOps ML answer |
+| --- | --- |
+| Why is this worth solving? | Retail teams need a reliable way to prioritise stockout and excess-inventory risk from fragmented operational data. |
+| What does it do? | It produces evidence-backed demand forecasts, inventory-risk cases, and reviewable action drafts per compatible SKU and location. |
+| How does it work? | Authorised connector data is validated, versioned, forecast chronologically, reviewed by deterministic specialists, and presented for human approval. |
+| What impact does it make? | A pilot measures forecast error, qualified cases found, planner response time, stockout days, and excess inventory. It does not promise outcomes before measurement. |
 
-## Non-negotiable limits
+## Current status
 
-- A price anomaly is not evidence of inflation, price gouging, wrongdoing, a supply shortage, or a cause of price change.
-- Inadequate coverage produces `INCONCLUSIVE`, not an estimate or recommendation.
-- Every displayed metric must come from a verified source field or deterministic calculation.
-- No paid AI or external LLM API is required.
+This is a clean RetailOps ML foundation. It contains the product constitution,
+retail connector contract, ML lifecycle governance, agent contracts, reusable
+skill, reframed product-decision prompt, and a minimal local scaffold.
 
-## Source data
+It intentionally has no live merchant connector, demand forecast, inventory
+score, or autonomous purchasing capability yet. Those are upcoming validated
+stages, not mocked features.
 
-The MVP uses the Malaysian government's official [PriceCatcher transactional records](https://data.gov.my/data-catalogue/pricecatcher), [item lookup](https://data.gov.my/data-catalogue/lookup_item), and [premise lookup](https://data.gov.my/data-catalogue/lookup_premise). See [the data contract](docs/data_contract.md) for verified schema, availability, and scope.
+## Documentation
 
-## Build status
-
-The reproducible MVP is implemented and verified. It includes:
-
-- Official-source ingestion with schema, provenance, unit, join, and date-continuity checks.
-- An item-and-unit-safe daily series, chronology-safe baseline and eligible Ridge comparison, and MAD residual anomaly method.
-- Four deterministic decision agents: Data Quality, Price Signal, Market Scope, and Reliability Critic; a deterministic reporter only presents their approved evidence.
-- A FastAPI API with SQLite audit storage and a React analytical dashboard for running and inspecting reviews.
-
-The latest local verification found 19 passing backend tests, a successful frontend production build, and a bounded live-data review that returned `PASS_WITH_LIMITATIONS` rather than inventing a conclusion. Read the [reliability audit](docs/reliability_audit.md), [constitution](docs/constitution.md), and [prompting standard](docs/prompting_standard.md) for the evidence rules and results.
-
-The current stage-by-stage delivery and acceptance checklist is in the [build track](docs/build_track.md).
+- [Constitution](docs/constitution.md)
+- [Retail connector contract](docs/data_contract.md)
+- [Agent contracts](docs/agent_prompts.md)
+- [ML lifecycle governance](docs/lifecycle_governance.md)
+- [Architecture](docs/architecture.md)
+- [Build track](docs/build_track.md)
+- [Product-decision prompt](docs/prompting_standard.md)
 
 ## Local development
 
-Backend, from `backend/`:
+Backend, from backend/:
 
-```powershell
+~~~powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 pytest
 uvicorn app.main:app --reload --port 8000
-```
+~~~
 
-Frontend, from `frontend/`:
+Frontend, from frontend/:
 
-```powershell
+~~~powershell
 pnpm install
 pnpm dev
-```
+~~~
 
-Open `http://localhost:5173` after starting the backend at `http://localhost:8000`. The dashboard fetches the official source files at analysis time and may return `INCONCLUSIVE` when they are unavailable or insufficient for a qualified review.
+Open http://localhost:5173 after starting the API at http://localhost:8000.

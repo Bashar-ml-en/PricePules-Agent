@@ -1,7 +1,6 @@
-# Runtime source-data cache
-data/raw/*.csv
-data/cache/
-!data/raw/.gitkeep
+# Authorised connector snapshots and derived artifacts
+data/snapshots/
+data/artifacts/
 
 # Python
 __pycache__/
@@ -14,6 +13,6 @@ backend/.packages/
 frontend/node_modules/
 frontend/dist/
 
-# Local settings and database
+# Local settings and databases
 .env
 *.db
