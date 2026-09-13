@@ -1,5 +1,5 @@
 {
-  "name": "pricepulse-my-frontend",
+  "name": "retailops-ml-frontend",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -11,8 +11,7 @@
   "dependencies": {
     "@vitejs/plugin-react": "6.1.1",
     "react": "19.3.0",
-    "react-dom": "19.3.0",
-    "recharts": "3.10.1"
+    "react-dom": "19.3.0"
   },
   "devDependencies": {
     "@types/react": "19.3.0",
