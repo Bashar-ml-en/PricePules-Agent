@@ -1,1 +1,1 @@
-"""Deterministic data, modelling, and workflow services."""
+"""RetailOps ML service boundary."""
